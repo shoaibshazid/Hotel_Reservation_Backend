@@ -37,10 +37,10 @@ func (h *UserHandler) HandlePostUser(c *fiber.Ctx) error {
 		return nil
 	}
 
-	insertedUser, e := h.userStore.CreateUser(c.Context(), user)
+	insertedUser, err := h.userStore.CreateUser(c.Context(), user)
 
-	if e != nil {
-		return e
+	if err != nil {
+		return err
 	}
 	return c.JSON(insertedUser)
 }
@@ -65,4 +65,19 @@ func (h *UserHandler) HandleGetUsers(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(users)
+}
+
+func (h *UserHandler) HandleUpdateUser(c *fiber.Ctx) error {
+	var (
+		params types.UpdateUserParams
+		userID = c.Params("id")
+	)
+	if err := c.BodyParser(&params); err != nil {
+		return err
+	}
+	filter := db.Map{"_id": userID}
+	if err := h.userStore.UpdateUser(c.Context(), filter, params); err != nil {
+		return err
+	}
+	return c.JSON(map[string]string{"updated": userID})
 }

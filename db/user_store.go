@@ -10,10 +10,13 @@ import (
 
 const UserCollection = "users"
 
+type Map map[string]any
+
 type UserStore interface {
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	CreateUser(context.Context, *types.User) (*types.User, error)
+	UpdateUser(ctx context.Context, filter Map, params types.UpdateUserParams) error
 	DeleteUser(context.Context, string) error
 }
 
@@ -70,6 +73,20 @@ func (s *MongoUserStore) DeleteUser(ctx context.Context, userId string) error {
 	}
 	// TODO: Maybe its a good ides to handle if we did not delete the user
 	_, err = s.coll.DeleteOne(ctx, bson.M{"_id": oid})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *MongoUserStore) UpdateUser(ctx context.Context, filter Map, params types.UpdateUserParams) error {
+	oid, err := primitive.ObjectIDFromHex(filter["_id"].(string))
+	if err != nil {
+		return err
+	}
+	filter["_id"] = oid
+	update := bson.M{"$set": params.ToBSON()}
+	_, err = s.coll.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}

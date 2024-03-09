@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"regexp"
@@ -21,12 +22,28 @@ type CreateUserParams struct {
 	Password  string `json:"password"`
 }
 
+type UpdateUserParams struct {
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+}
+
+func (p UpdateUserParams) ToBSON() bson.M {
+	m := bson.M{}
+	if len(p.FirstName) > 0 {
+		m["firstName"] = p.FirstName
+	}
+	if len(p.LastName) > 0 {
+		m["lastName"] = p.LastName
+	}
+	return m
+}
+
 type User struct {
 	Id                primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
-	FirstName         string             `bson:"first_name" json:"firstName"`
-	LastName          string             `bson:"last_name" json:"lastName"`
+	FirstName         string             `bson:"firstName" json:"firstName"`
+	LastName          string             `bson:"lastName" json:"lastName"`
 	Email             string             `bson:"email" json:"email"`
-	EncryptedPassword string             `bson:"encrypted_password" json:"-"`
+	EncryptedPassword string             `bson:"EncryptedPassword" json:"-"`
 }
 
 func NewUserFromParams(params CreateUserParams) (*User, error) {

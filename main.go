@@ -36,8 +36,7 @@ func main() {
 	apiV1.Get("/user/:id", userHandler.HandleGetUser)
 	apiV1.Post("/user", userHandler.HandlePostUser)
 	apiV1.Delete("/user/:id", userHandler.HandleDeleteUser)
-	//apiV1.Get("/user", api.HandleGetUsers)
-	//apiV1.Get("/user:id", api.HandleGetUser)
+	apiV1.Put("/user/:id", userHandler.HandleUpdateUser)
 	err = app.Listen(":6543")
 	if err != nil {
 		panic(err)
