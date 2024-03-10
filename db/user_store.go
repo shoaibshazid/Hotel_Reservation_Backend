@@ -12,7 +12,11 @@ const UserCollection = "users"
 
 type Map map[string]any
 
+type Dropper interface {
+	Drop(ctx context.Context) error
+}
 type UserStore interface {
+	Dropper
 	GetUserById(context.Context, string) (*types.User, error)
 	GetUsers(context.Context) ([]*types.User, error)
 	CreateUser(context.Context, *types.User) (*types.User, error)
@@ -25,11 +29,15 @@ type MongoUserStore struct {
 	coll   *mongo.Collection
 }
 
-func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
+func NewMongoUserStore(client *mongo.Client, dbname string) *MongoUserStore {
 	return &MongoUserStore{
 		client: client,
-		coll:   client.Database(Dbname).Collection(UserCollection),
+		coll:   client.Database(dbname).Collection(UserCollection),
 	}
+}
+
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	return s.coll.Drop(ctx)
 }
 
 func (s *MongoUserStore) GetUserById(ctx context.Context, id string) (*types.User, error) {
