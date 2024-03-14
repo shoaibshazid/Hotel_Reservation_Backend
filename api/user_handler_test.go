@@ -14,9 +14,6 @@ import (
 	"testing"
 )
 
-const testdburi = "mongodb://localhost:27017"
-const dbnametesting = "hotel-reservation"
-
 type testdb struct {
 	db.UserStore
 }
@@ -28,13 +25,13 @@ func (tdb *testdb) teardown(t *testing.T) {
 }
 
 func setup(t *testing.T) *testdb {
-	clientOptions := options.Client().ApplyURI(testdburi)
+	clientOptions := options.Client().ApplyURI(db.TESTDBURI)
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		t.Fatal(err)
 	}
 	return &testdb{
-		UserStore: db.NewMongoUserStore(client, dbnametesting),
+		UserStore: db.NewMongoUserStore(client, db.DBNAMETESTING),
 	}
 }
 func TestPostUser(t *testing.T) {

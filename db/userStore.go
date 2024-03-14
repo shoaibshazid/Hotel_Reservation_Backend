@@ -17,11 +17,11 @@ type Dropper interface {
 }
 type UserStore interface {
 	Dropper
-	GetUserById(context.Context, string) (*types.User, error)
-	GetUsers(context.Context) ([]*types.User, error)
-	CreateUser(context.Context, *types.User) (*types.User, error)
+	GetUserById(ctx context.Context, id string) (*types.User, error)
+	GetUsers(ctx context.Context) ([]*types.User, error)
+	CreateUser(ctx context.Context, user *types.User) (*types.User, error)
 	UpdateUser(ctx context.Context, filter Map, params types.UpdateUserParams) error
-	DeleteUser(context.Context, string) error
+	DeleteUser(ctx context.Context, userId string) error
 }
 
 type MongoUserStore struct {

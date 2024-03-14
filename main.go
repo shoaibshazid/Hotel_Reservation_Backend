@@ -11,13 +11,8 @@ import (
 	"log"
 )
 
-const (
-	dbURI  = "mongodb://localhost:27017"
-	dbname = "hotel-reservation"
-)
-
 func main() {
-	clientOptions := options.Client().ApplyURI(dbURI)
+	clientOptions := options.Client().ApplyURI(db.DBURI)
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +25,7 @@ func main() {
 	}()
 
 	//handlers initialization
-	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, dbname))
+	userHandler := api.NewUserHandler(db.NewMongoUserStore(client, db.DBNAME))
 	app := fiber.New()
 	apiV1 := app.Group("api/v1")
 	apiV1.Get("/users", userHandler.HandleGetUsers)
