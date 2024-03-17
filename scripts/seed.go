@@ -18,27 +18,28 @@ var (
 	ctx        = context.Background()
 )
 
-func seedHotel(name string, location string) error {
+func seedHotel(name string, location string, rating int) error {
 	hotel := types.Hotel{
 		Name:     name,
 		Location: location,
 		Rooms:    []primitive.ObjectID{},
+		Rating:   rating,
 	}
 	rooms := []types.Room{
 		{
-			Type:      types.SingleRoomTYpe,
+			Size:      "small",
 			BasePrice: 99.9,
 		},
 		{
-			Type:      types.DoubleRoomTYpe,
+			Size:      "normal",
 			BasePrice: 999.9,
 		},
 		{
-			Type:      types.SeaSideRoomType,
+			Size:      "large",
 			BasePrice: 9999.9,
 		},
 		{
-			Type:      types.DeluxeRoomType,
+			Size:      "King-Size",
 			BasePrice: 99999.9,
 		},
 	}
@@ -61,11 +62,11 @@ func seedHotel(name string, location string) error {
 
 func main() {
 	var err error
-	err = seedHotel("Meridian", "Hyderabad")
+	err = seedHotel("Meridian", "Hyderabad", 5)
 	if err != nil {
 		return
 	}
-	err = seedHotel("Sheraton", "Hyderabad")
+	err = seedHotel("Sheraton", "Hyderabad", 4)
 	if err != nil {
 		return
 	}
