@@ -15,11 +15,11 @@ import (
 )
 
 type testdb struct {
-	db.UserStore
+	UserStore db.Store
 }
 
 func (tdb *testdb) teardown(t *testing.T) {
-	if err := tdb.UserStore.Drop(context.TODO()); err != nil {
+	if err := tdb.UserStore.User.Drop(context.TODO()); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -31,14 +31,16 @@ func setup(t *testing.T) *testdb {
 		t.Fatal(err)
 	}
 	return &testdb{
-		UserStore: db.NewMongoUserStore(client, db.DBNAMETESTING),
+		UserStore: db.Store{
+			User: db.NewMongoUserStore(client),
+		},
 	}
 }
 func TestPostUser(t *testing.T) {
 	tdb := setup(t)
 	defer tdb.teardown(t)
 	app := fiber.New()
-	UserHandler := NewUserHandler(tdb.UserStore)
+	UserHandler := NewUserHandler(&tdb.UserStore)
 	app.Post("/", UserHandler.HandlePostUser)
 	params := types.CreateUserParams{
 		Email:     "hello@gmail.com",
